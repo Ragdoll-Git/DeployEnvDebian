@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#
 # ==============================================================================
 #  SCRIPT DE DESPLIEGUE DE ENTORNO MODERNIZADO (Debian 12/13)
 #  Autor: Gemini 3 Pro
@@ -363,4 +363,5 @@ echo -e "${BLUE}    ¡INSTALACIÓN COMPLETADA!                             ${NC}
 echo -e "${BLUE}=========================================================${NC}"
 echo "1. Reinicia tu terminal o ejecuta: source ~/.zshrc"
 echo "2. Usa 'ollama:', 'gemma:', 'phi:' o 'gemini:' para interactuar."
+
 echo "3. ¡Disfruta!"
