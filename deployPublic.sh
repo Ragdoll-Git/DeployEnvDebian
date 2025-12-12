@@ -8,7 +8,7 @@
 #  Descripción: Configura Zsh, Kitty, Ollama (Local LLMs) y Gemini (Cloud Backup).
 # ==============================================================================
 
-# Configuración de seguridad
+# Configuración de seguridad: Detener si hay error, tratar variables no definidas como error
 set -e
 set -u
 
@@ -24,7 +24,7 @@ USER_HOME=$HOME
 ZSH_CUSTOM="$USER_HOME/.oh-my-zsh/custom"
 
 echo -e "${BLUE}=========================================================${NC}"
-echo -e "${BLUE}    DESPLIEGUE DE ENTORNO DEBIAN + IA (Público) ${NC}"
+echo -e "${BLUE}    DESPLIEGUE DE ENTORNO DEBIAN + IA (Público & Seguro) ${NC}"
 echo -e "${BLUE}=========================================================${NC}"
 echo "Este script es idempotente (seguro de correr varias veces)."
 echo "Compatibilidad probada: Debian 12 (Bookworm) y Debian 13 (Trixie)."
@@ -54,33 +54,35 @@ read -p "¿Configurar Gemini CLI (Requiere API Key de Google)? (s/n): " INSTALL_
 # 1. PAQUETES BASE (Soporte Debian 12/13)
 # ==============================================================================
 if [[ "$INSTALL_BASE" =~ ^[sS]$ ]]; then
-    echo -e "\n${GREEN}[1/4] Instalando paquetes base...${NC}"
+    echo -e "\n${GREEN}[1/4] Instalando base...${NC}"
     
     sudo apt update
-    sudo apt install -y curl git unzip fontconfig gpg
+    sudo apt install -y curl git unzip fontconfig gpg kitty zsh fzf bat zoxide python3-venv python3-pip gnome-shell-extension-desktop-icons-ng
 
-    # --- Instalación de EZA (Soporte para Debian 12) ---
+    # --- INSTALACIÓN EZA (A PRUEBA DE FALLOS) ---
     if ! command -v eza &> /dev/null; then
-        echo "Configurando repositorio para 'eza'..."
-        sudo mkdir -p -m 755 /etc/apt/keyrings
-        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg --yes
-        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de/stable/ /" | sudo tee /etc/apt/sources.list.d/gierens.list
-        sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
-        sudo apt update
-        sudo apt install -y eza
+        echo "Instalando eza..."
+        # Si es Debian 13 (Trixie) o superior, está en repos
+        if apt-cache show eza &> /dev/null; then
+            sudo apt install -y eza
+        else
+            # FALLBACK PARA DEBIAN 12: Descarga directa de binario (No rompe apt)
+            echo "Detectado Debian 12/Antiguo. Descargando binario oficial..."
+            EZA_URL="https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
+            wget -qO /tmp/eza.tar.gz "$EZA_URL"
+            tar -xzf /tmp/eza.tar.gz -C /tmp
+            sudo mv /tmp/eza /usr/local/bin/eza
+            sudo chmod +x /usr/local/bin/eza
+            rm /tmp/eza.tar.gz
+        fi
     else
         echo "Eza ya instalado."
     fi
 
-    # Instalar resto de herramientas
-    sudo apt install -y kitty zsh fzf bat zoxide python3-venv python3-pip \
-                        gnome-shell-extension-desktop-icons-ng
-
-    # Fix batcat -> bat
+    # Fix batcat
     if [ ! -f ~/.local/bin/bat ]; then
         mkdir -p ~/.local/bin
-        ln -s /usr/bin/batcat ~/.local/bin/bat
-        echo "Symlink creado para batcat."
+        ln -sf /usr/bin/batcat ~/.local/bin/bat
     fi
 fi
 
@@ -338,7 +340,7 @@ if user_input:
         print(f"Error de API: {e}")
 else:
     # Modo Chat (Interactivo)
-    print("\033[1;34m🤖 Gemini Chat (Ctrl+C para salir)\033[0m")
+    print("\033[1;34m Gemini Chat (Ctrl+C para salir)\033[0m")
     chat = model.start_chat(history=[])
     while True:
         try:
