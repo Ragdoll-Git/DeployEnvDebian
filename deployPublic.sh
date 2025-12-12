@@ -24,7 +24,7 @@ USER_HOME=$HOME
 ZSH_CUSTOM="$USER_HOME/.oh-my-zsh/custom"
 
 echo -e "${BLUE}=========================================================${NC}"
-echo -e "${BLUE}    DESPLIEGUE DE ENTORNO DEBIAN + IA (Público & Seguro) ${NC}"
+echo -e "${BLUE}    DESPLIEGUE DE ENTORNO DEBIAN + IA (Público) ${NC}"
 echo -e "${BLUE}=========================================================${NC}"
 echo "Este script es idempotente (seguro de correr varias veces)."
 echo "Compatibilidad probada: Debian 12 (Bookworm) y Debian 13 (Trixie)."
