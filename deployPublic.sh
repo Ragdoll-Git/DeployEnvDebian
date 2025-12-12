@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+
 # ==============================================================================
 #  SCRIPT DE DESPLIEGUE DE ENTORNO MODERNIZADO (Debian 12/13)
 #  Autor: Gemini 3 Pro
@@ -8,7 +8,7 @@
 #  Descripción: Configura Zsh, Kitty, Ollama (Local LLMs) y Gemini (Cloud Backup).
 # ==============================================================================
 
-# Configuración de seguridad: Detener si hay error, tratar variables no definidas como error
+# Configuración de seguridad
 set -e
 set -u
 
@@ -60,8 +60,6 @@ if [[ "$INSTALL_BASE" =~ ^[sS]$ ]]; then
     sudo apt install -y curl git unzip fontconfig gpg
 
     # --- Instalación de EZA (Soporte para Debian 12) ---
-    # Debian 12 no trae eza en repos oficiales, Debian 13 sí.
-    # Por estabilidad, agregamos el repo oficial de gierens para asegurar versión reciente.
     if ! command -v eza &> /dev/null; then
         echo "Configurando repositorio para 'eza'..."
         sudo mkdir -p -m 755 /etc/apt/keyrings
@@ -340,7 +338,7 @@ if user_input:
         print(f"Error de API: {e}")
 else:
     # Modo Chat (Interactivo)
-    print("\033[1;34m Gemini Chat (Ctrl+C para salir)\033[0m")
+    print("\033[1;34m🤖 Gemini Chat (Ctrl+C para salir)\033[0m")
     chat = model.start_chat(history=[])
     while True:
         try:
@@ -363,5 +361,4 @@ echo -e "${BLUE}    ¡INSTALACIÓN COMPLETADA!                             ${NC}
 echo -e "${BLUE}=========================================================${NC}"
 echo "1. Reinicia tu terminal o ejecuta: source ~/.zshrc"
 echo "2. Usa 'ollama:', 'gemma:', 'phi:' o 'gemini:' para interactuar."
-
 echo "3. ¡Disfruta!"
