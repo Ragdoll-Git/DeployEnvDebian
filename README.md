@@ -1,14 +1,14 @@
-# 🚀 DeployEnvDebian (Multi-Distro Edition)
+# 🚀 BrainBash (Multi-Distro Edition)
 
 ![Python](https://img.shields.io/badge/Python-3.7%2B-blue?logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Debian%20|%20Alpine%20|%20Fedora-gray?logo=linux)
-![CI](https://github.com/Ragdoll-Git/DeployEnvDebian/actions/workflows/test_distros.yml/badge.svg)
+![CI](https://github.com/Ragdoll-Git/BrainBash/actions/workflows/test_distros.yml/badge.svg)
 
 Un sistema moderno, agnóstico y robusto para automatizar la configuración de entornos Linux. Diseñado para funcionar tanto de forma interactiva (TUI) como en pipelines de integración continua (CI/CD).
 
 ## 📋 Descripción
 
-**DeployEnvDebian** es una aplicación modular escrita en **Python** que detecta automáticamente tu distribución Linux y configura tu entorno de desarrollo en minutos.
+**BrainBash** es una aplicación modular escrita en **Python** que detecta automáticamente tu distribución Linux y configura tu entorno de desarrollo en minutos.
 **Soporte actual:**
 - 🍥 **Debian / Ubuntu / Kali** (apt)
 - 🏔️ **Alpine Linux** (apk)
@@ -42,8 +42,8 @@ Como el proyecto ahora reside en la rama principal, la instalación es directa:
 
 ```bash
 # 1. Clonar el repositorio
-git clone [https://github.com/Ragdoll-Git/DeployEnvDebian.git](https://github.com/Ragdoll-Git/DeployEnvDebian.git)
-cd DeployEnvDebian
+git clone [https://github.com/Ragdoll-Git/BrainBash.git](https://github.com/Ragdoll-Git/BrainBash.git)
+cd BrainBash
 
 # 2. Ejecutar (Detecta distro automáticamente)
 python3 main.py
@@ -110,7 +110,7 @@ Una vez instalado, tu terminal tendrá superpoderes (requiere Ollama instalado a
 
 ## 📁 Estructura del Proyecto
 ```plaintext
-DeployEnvDebian/
+BrainBash/
 ├── main.py                 # Punto de entrada (CLI + GUI)
 ├── README.md               # Documentación
 ├── config/                 # Tus archivos de configuración reales
