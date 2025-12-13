@@ -182,7 +182,7 @@ def main():
 if __name__ == "__main__":
     # Verificacion de sistema (Solo corre en Linux/Mac)
     if hasattr(os, "geteuid"): 
-        if os.geteuid() == 0:
+        if os.geteuid() == 0: # type: ignore
             print("[Warn] Estas ejecutando como root. Es recomendable usar usuario normal con sudo.")
         
     try:
