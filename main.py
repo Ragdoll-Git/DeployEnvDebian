@@ -2,6 +2,7 @@
 import sys
 import os
 import argparse
+import subprocess
 from pathlib import Path
 
 # Importaciones de nuestros modulos
@@ -29,7 +30,7 @@ DOTFILES_MAP = {
 }
 
 # ==========================================
-# LOGICA PRINCIPAL
+# LOGICA AUXILIAR
 # ==========================================
 
 def get_distro_manager():
@@ -56,6 +57,28 @@ def get_distro_manager():
         print("[Error] No se pudo leer /etc/os-release.")
         sys.exit(1)
 
+def install_oh_my_zsh(logger):
+    """
+    Verifica si existe la carpeta .oh-my-zsh y si no, la descarga.
+    """
+    omz_path = Path.home() / ".oh-my-zsh"
+    
+    if omz_path.exists():
+        logger.info("[Skip] Oh My Zsh ya está instalado.")
+        return
+
+    logger.info("Descargando e instalando Oh My Zsh...")
+    try:
+        # Comando oficial con --unattended para que no bloquee el script
+        cmd = 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+        
+        # Ejecutamos el comando en la shell del sistema
+        subprocess.run(cmd, shell=True, check=True)
+        logger.success("Oh My Zsh instalado correctamente.")
+        
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error al instalar Oh My Zsh: {e}")
+
 def parse_arguments():
     """Define y captura los argumentos de linea de comandos para modo desatendido"""
     parser = argparse.ArgumentParser(description="Despliegue automatico de entorno Linux")
@@ -64,6 +87,10 @@ def parse_arguments():
     parser.add_argument("--dotfiles", action="store_true", help="Instalar solo dotfiles")
     parser.add_argument("--theme", type=str, default="blue", choices=["blue", "green", "magenta", "red"], help="Color del tema para logs (solo modo desatendido)")
     return parser.parse_args()
+
+# ==========================================
+# LOGICA PRINCIPAL
+# ==========================================
 
 def main():
     # Capturamos argumentos
@@ -96,6 +123,11 @@ def main():
                 manager.update()
                 manager.install(BASE_PACKAGES)
                 logger.success("Paquetes instalados.")
+                
+                # Instalar OMZ inmediatamente despues de los paquetes base (git/curl/zsh)
+                logger.step("Fase 1.5: Framework Shell")
+                install_oh_my_zsh(logger)
+                
             except Exception as e:
                 logger.error(f"Error instalando paquetes: {e}")
                 sys.exit(1)
@@ -162,6 +194,11 @@ def main():
             manager.update()
             manager.install(BASE_PACKAGES)
             logger.success("Paquetes instalados correctamente.")
+            
+            # Instalar OMZ inmediatamente despues de los paquetes base
+            logger.step("Fase 1.5: Framework Shell")
+            install_oh_my_zsh(logger)
+            
         except Exception as e:
             logger.error(f"Fallo en la instalacion de paquetes: {e}")
             sys.exit(1)

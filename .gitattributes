@@ -1,3 +1,15 @@
-# Forzar a que los scripts de shell siempre usen saltos de línea LF, incluso si se edita en Windows.
+# 1. Regla de ORO: Todo archivo de texto se convierte a LF (Linux) automáticamente
+* text=auto eol=lf
+
+# 2. Reglas específicas para asegurar tus archivos clave
 *.sh text eol=lf
-install.sh text eol=lf
+*.py text eol=lf
+*.toml text eol=lf
+*.conf text eol=lf
+
+# 3. Archivos sin extensión (como tu zshrc)
+zshrc text eol=lf
+
+# 4. Excepciones: Archivos binarios (Imágenes) - ¡No tocar!
+*.png binary
+*.jpg binary
