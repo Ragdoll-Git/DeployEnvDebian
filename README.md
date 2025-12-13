@@ -1,10 +1,8 @@
 # 🚀 DeployEnvDebian (Multi-Distro Edition)
 
-![Python](https://img.shields.io/badge/Python-3.7%2B-blue?logo=python&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Debian%20|%20Alpine%20|%20Fedora-gray?logo=linux)
-![CI](https://github.com/Ragdoll-Git/DeployEnvDebian/actions/workflows/test_distros.yml/badge.svg)
+[![Test Multi-Distro Support](https://github.com/Ragdoll-Git/DeployEnvDebian/actions/workflows/test_distros.yml/badge.svg)](https://github.com/Ragdoll-Git/DeployEnvDebian/actions/workflows/test_distros.yml)
 
-Un sistema moderno, agnóstico y robusto para automatizar la configuración de entornos Linux. Diseñado para funcionar tanto de forma interactiva (TUI) como en pipelines de integración continua (CI/CD).
+Un sistema moderno y multiplataforma para automatizar la configuración de entornos Linux con instalación de paquetes y enlazado de dotfiles.
 
 ## 📋 Descripción
 
