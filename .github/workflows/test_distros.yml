@@ -1,0 +1,56 @@
+name: Test Multi-Distro Support
+# Se ejecuta cuando haces push a main o abres un Pull Request
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  # --- PRUEBA EN DEBIAN ---
+  test-debian:
+    runs-on: ubuntu-latest
+    container: debian:bookworm-slim
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies (Pre-requisitos)
+        # Instalamos sudo y python porque el contenedor viene vacío
+        run: |
+          apt-get update
+          apt-get install -y python3 sudo git curl
+
+      - name: Run Deploy Script (Unattended)
+        # Aquí usamos tus nuevos flags para que no pida input
+        run: python3 main.py --packages --theme blue
+
+  # --- PRUEBA EN ALPINE ---
+  test-alpine:
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          apk update
+          apk add python3 sudo git bash curl
+
+      - name: Run Deploy Script (Unattended)
+        run: python3 main.py --packages --theme green
+
+  # --- PRUEBA EN FEDORA ---
+  test-fedora:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          dnf install -y python3 sudo git curl
+
+      - name: Run Deploy Script (Unattended)
+        run: python3 main.py --packages --theme red
