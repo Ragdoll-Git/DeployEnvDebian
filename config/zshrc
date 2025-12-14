@@ -43,14 +43,15 @@ export BAT_THEME="Catppuccin Mocha"
 # FUNCIONES DE IA (Ollama + Gemini)
 # ==============================================================================
 
-# Funciones de limpieza
+# Funciones de limpieza (Helpers)
 clean_think() { sed '/<think>/,/<\/think>/d'; }
 clean_empty() { sed '/^$/d'; }
 
 # --- QWEN (Local - Rapido) ---
-qwen() {
+# Uso: qwen: "pregunta" o solo qwen:
+qwen:() {
     if [ -n "$1" ]; then
-        # Modo comando: Ejecuta y limpia el "pensamiento" (<think>...</think>)
+        # Modo comando: Ejecuta y limpia el "pensamiento"
         ollama run qwen-local "$*" | clean_think
     else
         # Modo chat interactivo
@@ -59,7 +60,8 @@ qwen() {
 }
 
 # --- GEMMA (Local - Balanceado) ---
-gemma() {
+# Uso: gemma: "pregunta" o solo gemma:
+gemma:() {
     if [ -n "$1" ]; then
         ollama run gemma-local "$*" | clean_empty
     else
@@ -68,7 +70,8 @@ gemma() {
 }
 
 # --- PHI (Local - Logica) ---
-phi() {
+# Uso: phi: "pregunta" o solo phi:
+phi:() {
     if [ -n "$1" ]; then
         ollama run phi-local "$*" | clean_empty
     else
@@ -77,13 +80,25 @@ phi() {
 }
 
 # --- GEMINI (Nube - Respaldo) ---
-gemini() {
+# Uso: gemini: "pregunta" o solo gemini:
+gemini:() {
     SCRIPT_PATH="$HOME/.gemini-cli/gemini_tool.py"
     VENV_PYTHON="$HOME/.gemini-cli/venv/bin/python"
     
-    if [ -f "$SCRIPT_PATH" ]; then
+    if [ ! -f "$SCRIPT_PATH" ]; then
+        echo "[Error] Gemini no esta configurado. Ejecuta el instalador nuevamente."
+        return 1
+    fi
+
+    if [ -n "$1" ]; then
+        # Modo pregunta directa
         "$VENV_PYTHON" "$SCRIPT_PATH" "$*"
     else
-        echo "[Error] Gemini no esta configurado. Ejecuta el instalador nuevamente."
+        # Modo chat (Simulado: Gemini API es stateless por defecto, 
+        # aqui solo pedimos input si el script python soporta loop, 
+        # o simplemente avisamos al usuario)
+        echo "Escribe tu pregunta para Gemini:"
+        read -r PREGUNTA
+        "$VENV_PYTHON" "$SCRIPT_PATH" "$PREGUNTA"
     fi
 }

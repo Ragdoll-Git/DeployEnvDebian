@@ -112,18 +112,29 @@ def setup_ollama(logger, selected_models):
         logger.step("Instalando Motor Ollama (Requerido para IA local)")
         subprocess.run("curl -fsSL https://ollama.com/install.sh | sh", shell=True)
     
-    # 2. Descargar Modelos
+    # 2. Descargar Modelos y crear alias
     logger.info("Verificando servicio IA...")
     time.sleep(2)
     
     for menu_id in selected_models:
-        tag = MODELS_MAP.get(menu_id)
-        if tag:
-            logger.step(f"IA Local: Descargando {tag}")
+        tag_original = MODELS_MAP.get(menu_id) # qwen3:0.6b
+        
+        # Definimos el nombre que espera el zshrc
+        tag_alias = f"{menu_id}-local"         # Ej: qwen-local
+        
+        if tag_original:
+            logger.step(f"IA Local: Configurando {tag_alias}")
             try:
-                subprocess.run(f"ollama pull {tag}", shell=True)
-            except:
-                logger.error(f"Fallo al descargar {tag}")
+                # 1. Pull del original
+                logger.info(f"Descargando base: {tag_original}...")
+                subprocess.run(f"ollama pull {tag_original}", shell=True, check=True)
+                
+                # 2. Crear el alias (cp) para que coincida con zshrc
+                logger.info(f"Creando alias: {tag_alias}...")
+                subprocess.run(f"ollama cp {tag_original} {tag_alias}", shell=True, check=True)
+                
+            except subprocess.CalledProcessError:
+                logger.error(f"Fallo al configurar {tag_alias}")
 
 def setup_gemini(logger):
     """Configura el entorno para Gemini (Nube)"""
