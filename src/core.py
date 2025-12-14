@@ -6,7 +6,6 @@ import subprocess
 # ==========================================
 # DICCIONARIO ROSETTA (Mapeo de Paquetes)
 # ==========================================
-# Estructura: "nombre_generico": {"distro": "nombre_real"}
 PACKAGE_MAP = {
     "python-dev": {
         "debian": "python3-dev",
@@ -14,70 +13,48 @@ PACKAGE_MAP = {
         "alpine": "python3-dev",
         "fedora": "python3-devel"
     },
-    "docker": {
-        "debian": "docker.io",
-        "ubuntu": "docker.io",
-        "alpine": "docker",
-        "fedora": "moby-engine"
-    },
-    "zsh": {
-        "default": "zsh"
-    },
-    "git": {
-        "default": "git"
-    },
-    "curl": {
-        "default": "curl"
-    },
-    "kitty": {
-        "default": "kitty"
-    },
-    "fzf": {
-        "default": "fzf"
-    },
+    "zsh": {"default": "zsh"},
+    "curl": {"default": "curl"},
+    "kitty": {"default": "kitty"},
+    "fzf": {"default": "fzf"},
+    
+    # === HERRAMIENTAS MODERNAS ===
     "bat": {
-        "debian": "bat",  # Ojo: en Debian a veces es 'bat', el fix de 'batcat' lo haremos en código
+        "debian": "bat",  # Debian instala 'batcat', el script debian.py ya hace el symlink
         "default": "bat"
-    }
+    },
+    "eza": {
+        "debian": "eza",  # Nota: Requiere repositorios recientes o cargo. Si falla, el script avisa.
+        "default": "eza"
+    },
+    "htop": {"default": "htop"}, # Monitor de recursos
+    "tldr": {"default": "tldr"}, # Manuales simplificados
+    "zoxide": {"default": "zoxide"}, # "cd" inteligente (requerido por tu zshrc)
+    "starship": {"default": "starship"} # Prompt (requerido por tu zshrc)
 }
 
 # ==========================================
-# CLASE ABSTRACTA (El Contrato)
+# CLASE ABSTRACTA
 # ==========================================
 class PackageManager(ABC):
-    """
-    Clase base que obliga a todos los gestores (Debian, Alpine, etc.)
-    a implementar los métodos update e install.
-    """
-
     def __init__(self, distro_id: str):
         self.distro_id = distro_id
 
     def _get_mapped_name(self, generic_name: str) -> str:
-        """Traduce el nombre genérico al específico de la distro"""
         mapping = PACKAGE_MAP.get(generic_name, {})
-        
-        # 1. Busca coincidencia exacta con la distro (ej: "debian")
         if self.distro_id in mapping:
             return mapping[self.distro_id]
-        
-        # 2. Si no, busca "default"
         if "default" in mapping:
             return mapping["default"]
-        
-        # 3. Si no hay mapa, asume que el nombre es igual al genérico
         return generic_name
 
     def check_is_installed(self, package: str) -> bool:
-        """Verifica si un comando existe en el PATH (método agnóstico universal)"""
         return shutil.which(package) is not None
 
     @abstractmethod
     def update(self):
-        """Debe actualizar los repositorios"""
         pass
 
     @abstractmethod
     def install(self, packages: List[str]):
-        """Debe instalar una lista de paquetes"""
         pass
