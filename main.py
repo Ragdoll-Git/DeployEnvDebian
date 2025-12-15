@@ -143,26 +143,55 @@ def setup_ollama(logger, selected_models):
                 subprocess.run(f"ollama pull {tag_original}", shell=True, check=True)
                 
                 # 2. Crear Modelfile customizado con el system prompt
+                # 2. Crear Modelfile usando la plantilla
                 if system_prompt:
                     logger.info(f"Creando {tag_alias} con contexto...")
-                    modelfile_content = textwrap.dedent(f"""
-                        FROM {tag_original}
-                        SYSTEM \"\"\"
-                        {system_prompt}
-                        \"\"\"
-                    """).strip()
                     
-                    # Usamos un archivo temporal o pipeamos
-                    subprocess.run(
-                        ["ollama", "create", tag_alias, "-f", "-"],
-                        input=modelfile_content.encode('utf-8'),
-                        check=True
-                    )
+                    template_path = Path(__file__).parent / "config" / "Modelfile"
+                    if not template_path.exists():
+                         logger.error("No se encontro config/Modelfile")
+                         continue
+
+                    with open(template_path, "r") as f:
+                        template_content = f.read()
+                    
+                    # Reemplazamos las variables
+                    final_modelfile = template_content.replace("${BASE_MODEL}", tag_original)
+                    final_modelfile = final_modelfile.replace("${SYSTEM_PROMPT}", system_prompt)
+
+                    # Escribimos el archivo final temporalmente
+                    modelfile_path = "Modelfile.gen"
+                    try:
+                        with open(modelfile_path, "w", encoding="utf-8") as f:
+                            f.write(final_modelfile)
+                        
+                        subprocess.run(
+                            ["ollama", "create", tag_alias, "-f", modelfile_path],
+                            check=True
+                        )
+                    finally:
+                         if os.path.exists(modelfile_path):
+                            os.remove(modelfile_path)
                 else:
                     # Fallback al viejo "cp" si no hay contexto
                     logger.info(f"Creando alias (sin contexto): {tag_alias}...")
                     subprocess.run(f"ollama cp {tag_original} {tag_alias}", shell=True, check=True)
                 
+                # 3. Crear wrapper (script ejecutable)
+                # Crea un archivo en ~/.local/bin/qwen que ejecuta "ollama run qwen-local $@"
+                bin_dir = Path.home() / ".local" / "bin"
+                bin_dir.mkdir(parents=True, exist_ok=True)
+                
+                wrapper_path = bin_dir / menu_id
+                logger.info(f"Creando comando: {menu_id}...")
+                
+                with open(wrapper_path, "w") as f:
+                    # $@ pasa todos los argumentos al comando ollama
+                    f.write(f'#!/bin/sh\nexec ollama run {tag_alias} "$@"\n')
+                
+                # Hacer ejecutable (+x)
+                wrapper_path.chmod(0o755)
+
             except subprocess.CalledProcessError:
                 logger.error(f"Fallo al configurar {tag_alias}")
 
