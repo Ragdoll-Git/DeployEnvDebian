@@ -1,4 +1,5 @@
 # 🧠 BrainBash ✨
+
 ![Python](https://img.shields.io/badge/Python-3.7%2B-blue?logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Debian%20|%20Alpine%20|%20Fedora-gray?logo=linux)
 
